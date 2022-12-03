@@ -1,0 +1,17 @@
+{
+  "name": "backend_g16",
+  "version": "1.0.0",
+  "description": "Proyecto G16",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "Grupo 16",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

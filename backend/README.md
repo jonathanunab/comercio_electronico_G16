@@ -24,3 +24,10 @@ npm i mongoose
 ## [Paso 1] Definición del modelo usuario con mongoose
 ## [Paso 2] Creación de rutas para la API usuario en el archivo usuarioRouters.js
 ## [Paso 3] Creación de controlador de usuarios
+
+# Tercera sesión
+## [Paso 1] Instalación bcrypt para encriptar la contraseña y pruebas con postman del endpoint para crear usuarios
+
+# Cuarta sesión
+## [Paso 1] Validación de existencia de usuarios en la base de datos por email para no duplicar cuentas (archivo usuarioController.js).
+## [Paso 2] Creación de los archivos authController.js y authRouters.js para realizar la autenticación con JWT.

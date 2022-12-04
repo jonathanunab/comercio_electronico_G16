@@ -15,3 +15,12 @@ npm i -D nodemon
 ```
 npm run dev
 ```
+## [Paso 5] Instalación ORM mongoose y configuración de variables para conexión a BD
+```
+npm i mongoose
+```
+
+# Segunda sesión
+## [Paso 1] Definición del modelo usuario con mongoose
+## [Paso 2] Creación de rutas para la API usuario en el archivo usuarioRouters.js
+## [Paso 3] Creación de controlador de usuarios

@@ -1,5 +1,4 @@
 const Producto = require("../models/producto");
-const Categoria = require("../models/categoria");
 
 /*
 // GET
@@ -27,29 +26,28 @@ exports.borrarProducto = async (req, res) => {
 
 // GET
 exports.leerProducto = async (req, res) => {
+    const {id} = req.params;
+    const producto = await Producto.find().where("categoriaId").equals(id);
+    res.json(producto);
+}
+
+// GET Producto Home
+
+exports.leerProductoHome = async ( req, res ) => {
     try{
         const producto = await Producto.find();
-       //No sé cómo adicionar el Id de la Categoría
-
-        res.json({producto});
-
+        res.json({ producto });
     }catch(error){
         console.log(error);
-    } 
+    }
 }
 
 // POST
 exports.crearProducto = async (req, res) => {
-    const {categoriaId} = req.body;
-    console.log(categoriaId);
+    //const {categoriaId} = req.body;
+    //console.log(categoriaId);
 
     try{
-        const categoriaencontrada = await Categoria.findById(categoriaId);
-
-        if(!categoriaencontrada){
-            return res.status(404).json({msg: "Categoría no encontrada" });
-        }
-
         const producto = new Producto(req.body);
 
         producto.save();
@@ -76,6 +74,7 @@ exports.actualizarProducto = async (req, res) => {
         producto.descripcion = req.body.descripcion || producto.descripcion;
         producto.stock = req.body.stock || producto.stock;
         producto.precio = req.body.precio || producto.precio;
+        producto.imagen = req.body.precio || producto.imagen;
         producto.save();
         res.json({ producto});
 

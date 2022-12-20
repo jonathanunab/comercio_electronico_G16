@@ -1,8 +1,10 @@
 const Usuario = require('../models/usuario');
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config({path:"variables.env"});
 
-exports.crearUsuario = async (req, res) => {
-    //console.log(req.body);
+exports.autenticarUsuario = async (req, res) => {
+    
     const { password, email } = req.body;
 
     try {
@@ -10,21 +12,47 @@ exports.crearUsuario = async (req, res) => {
         // Validación de existencia de usuario en la base de datos
         let usuario = await Usuario.findOne({email});
 
-        if (usuario) {
-            return res.status(400).json({msg:"el usuario ya existe"})
+        if (!usuario) {
+            return res.status(400).json({msg:"el usuario no existe"})
         }
 
-        // Crear nuevo usuario
-        usuario = new Usuario(req.body);
+        // Validar contraseña
+        const passwordCorrecto = await bcryptjs.compare(password, usuario.password);
 
-        // encriptacion
-        usuario.password = await bcryptjs.hash(password, 10);
+        if (!passwordCorrecto) {
+            return res.status(404).json({msg:"password incorrecto"})
+        }
 
-        // Guardar usuario en la BD
-        const usuarioAlmacenado = await usuario.save();
-        res.json(usuarioAlmacenado);
+        let payload = {
+            usuario: {id: usuario.id}
+        }
+        //res.json(payload);
+
+        // Si pasan las validaciones se genera un token
+        jwt.sign(
+            payload,
+            process.env.SECRETA,
+            {
+                expiresIn: '30d',
+            },
+            (error, token) => {
+                if(error) throw error;
+
+                // confirmación token creado
+                res.json({token});
+            }
+        );
         
     } catch (error) {
         console.log(error);
+    }
+};
+
+exports.usuarioAutenticado = async( req, res) => {
+    try {
+        const usuario = await Usuario.findById(req.usuario.id);
+        res.json({usuario});
+    } catch (error) {
+        return res.status(403).json({msg:"Error de autenticacion"});
     }
 };

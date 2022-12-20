@@ -1,59 +1,30 @@
-const Usuario = require("../models/usuario");
-const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-require("dotenv").config({ path: "variables.env"});
+const Usuario = require('../models/usuario');
+const bcryptjs = require('bcryptjs');
 
-exports.autenticarUsuario = async(req, res) => {
-    const { password, email } = req.body; 
+exports.crearUsuario = async (req, res) => {
+    //console.log(req.body);
+    const { password, email } = req.body;
 
-    try{
-        //Revisar si el correo está registrado
+    try {
+
+        // Validación de existencia de usuario en la base de datos
         let usuario = await Usuario.findOne({email});
 
-        if (!usuario){
-            return res.status(400).json({msg : "El usuario no existe"});
+        if (usuario) {
+            return res.status(400).json({msg:"el usuario ya existe"})
         }
 
-        //Validar el password
-        const passwordCorrecto = await bcryptjs.compare(password, usuario.password);
+        // Crear nuevo usuario
+        usuario = new Usuario(req.body);
 
-        if (!passwordCorrecto){
-            return res.status(404).json({msg: "password incorrecto"});
-        }
+        // encriptacion
+        usuario.password = await bcryptjs.hash(password, 10);
 
-        // si todo es correcto: crear y firmar un token
-
-        let payload = {
-            usuario: {id : usuario.id},
-         };
-         //res.json(payload);
-          jwt.sign(
-            payload,
-            process.env.SECRETA,
-            {
-                expiresIn: '30d', //30 días
-            },
-            (error, token) =>{
-                if (error) throw error;
-                // mensaje de confirmación
-                res.json({token});
-            }
-
-          );
-
-        console.log("Permitir ingresar")
-
-    }catch(error){
+        // Guardar usuario en la BD
+        const usuarioAlmacenado = await usuario.save();
+        res.json(usuarioAlmacenado);
+        
+    } catch (error) {
         console.log(error);
     }
-}
-
-exports.usuarioAutenticado = async(req, res) =>{
-    try{
-        const usuario = await Usuario.findById(req.usuario.id);
-        res.json({usuario});
-        
-    }catch(error){
-        res.status(403).json({msg: "Hubo un error"});
-    }
-}
+};

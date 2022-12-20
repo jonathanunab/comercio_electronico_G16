@@ -1,23 +1,22 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken')
+require('dotenv').config({path:"variables.env"});
 
-module.exports = function (req, res, next){
-    // Leer token desde el header de postman
-    const token = req.header("x-auth-token");
+module.exports = function(req, res, next){
+    // Leer token desde el header en postman
+    const token = req.header('x-auth-token');
     //console.log(token);
 
-    // Revisar si hay token o no
-    if(!token){
-        return res.status(400).json({msg: "No hay token"});
+    // Se verifica si hay token
+    if (!token) {
+        return res.status(401).json({msg:"No hay token"});
     }
 
-    // Validar token
-    try{
-        const cifrado = jwt.verify(token, process.env.SECRETA)
+    // Validación token
+    try {
+        const cifrado = jwt.verify(token, process.env.SECRETA);
         req.usuario = cifrado.usuario;
-        //console.log(cifrado.usuario);
         next();
-        
-    }catch(error){
-        res.estatus(400).json({msg: "Token no válido"})
+    } catch (error) {
+        return res.status(401).json({msg:"Token no valido"});
     }
-}
+};
